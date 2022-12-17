@@ -1,0 +1,14 @@
+#microservice
+server:
+    port: 8087
+
+#mongodb
+spring:
+  data:
+    mongodb:
+      host: 172.22.0.3
+      port: 27017
+      authentication-database: admin
+      username: root
+      password: dvmongo123
+      database: users
