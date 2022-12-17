@@ -1,6 +1,6 @@
 package com.ead.authuser.services.impl;
 
-import com.ead.authuser.models.User;
+import com.ead.authuser.models.UserModel;
 import com.ead.authuser.repositories.UserRepository;
 import com.ead.authuser.services.UserService;
 import org.springframework.stereotype.Service;
@@ -16,11 +16,11 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public UserModel createUser(UserModel userModel) {
+        return userRepository.save(userModel);
     }
 
-    public List<User> getAllUsers() {
+    public List<UserModel> getAllUsers() {
         return userRepository.findAll();
     }
 }

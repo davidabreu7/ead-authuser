@@ -1,12 +1,12 @@
 package com.ead.authuser.services;
 
-import com.ead.authuser.models.User;
+import com.ead.authuser.models.UserModel;
 
 import java.util.List;
 
 public interface UserService {
 
-    public User createUser(User user);
+    UserModel createUser(UserModel userModel);
 
-    public List<User> getAllUsers();
+    List<UserModel> getAllUsers();
 }

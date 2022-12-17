@@ -1,7 +1,7 @@
 package com.ead.authuser.controller;
 
 
-import com.ead.authuser.models.User;
+import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.UserService;
 import com.ead.authuser.services.impl.UserServiceImpl;
 import jakarta.validation.Valid;
@@ -21,12 +21,12 @@ private final UserService userService;
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserModel>> getAllUsers() {
         return ResponseEntity.ok().body(userService.getAllUsers());
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
-        return ResponseEntity.ok(userService.createUser(user));
+    public ResponseEntity<UserModel> createUser(@RequestBody @Valid UserModel userModel) {
+        return ResponseEntity.ok(userService.createUser(userModel));
     }
 }
