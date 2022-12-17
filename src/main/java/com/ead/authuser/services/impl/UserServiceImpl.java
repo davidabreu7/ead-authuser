@@ -1,5 +1,7 @@
 package com.ead.authuser.services.impl;
 
+import com.ead.authuser.dto.UserDto;
+import com.ead.authuser.exceptions.ResourceNotFoundException;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.repositories.UserRepository;
 import com.ead.authuser.services.UserService;
@@ -16,11 +18,17 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    public UserModel createUser(UserModel userModel) {
-        return userRepository.save(userModel);
+    public UserModel createUser(UserDto userModel) {
+        return userRepository.save(new UserModel(userModel));
     }
 
     public List<UserModel> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public UserModel findById(String id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 }

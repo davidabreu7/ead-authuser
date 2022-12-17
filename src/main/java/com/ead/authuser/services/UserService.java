@@ -1,12 +1,16 @@
 package com.ead.authuser.services;
 
+import com.ead.authuser.dto.UserDto;
 import com.ead.authuser.models.UserModel;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
 public interface UserService {
 
-    UserModel createUser(UserModel userModel);
+    UserModel createUser(@Valid UserDto userModel);
 
     List<UserModel> getAllUsers();
+
+    UserModel findById(String id);
 }

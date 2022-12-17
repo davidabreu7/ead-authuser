@@ -1,11 +1,9 @@
-package com.ead.authuser.models;
+package com.ead.authuser.dto;
 
-import com.ead.authuser.dto.UserDto;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
@@ -13,15 +11,11 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Document(collection = "users")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserModel {
-
+public class UserDto {
     @Id
     private String id;
     @Indexed(unique = true)
@@ -56,21 +50,4 @@ public class UserModel {
     @NotBlank
     @JsonProperty("user_type")
     private UserType userTyoe;
-
-    public UserModel(UserDto userModel) {
-        this.id = userModel.getId();
-        this.username = userModel.getUsername();
-        this.email = userModel.getEmail();
-        this.password = userModel.getPassword();
-        this.fullname = userModel.getFullname();
-        this.phoneNumber = userModel.getPhoneNumber();
-        this.cpf = userModel.getCpf();
-        this.imageUrl = userModel.getImageUrl();
-        this.createdAt = userModel.getCreatedAt();
-        this.updatedAt = userModel.getUpdatedAt();
-        this.userStatus = userModel.getUserStatus();
-        this.userTyoe = userModel.getUserTyoe();
-    }
-
 }
-
