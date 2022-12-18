@@ -6,6 +6,7 @@ import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.UserService;
 import com.ead.authuser.services.impl.UserServiceImpl;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +33,15 @@ private final UserService userService;
         return ResponseEntity.ok(userService.findById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<UserModel> createUser(@RequestBody @Valid UserDto userModel) {
-        return ResponseEntity.ok(userService.createUser(userModel));
+    @PutMapping("/{id}")
+    public ResponseEntity<UserModel> updateUser(@PathVariable String id, @RequestBody @Valid UserDto userModel) {
+        return ResponseEntity.ok(userService.updateUser(id, userModel));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable String id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

@@ -1,12 +1,15 @@
 package com.ead.authuser.services.impl;
 
 import com.ead.authuser.dto.UserDto;
+import com.ead.authuser.enums.UserStatus;
+import com.ead.authuser.enums.UserType;
 import com.ead.authuser.exceptions.ResourceNotFoundException;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.repositories.UserRepository;
 import com.ead.authuser.services.UserService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,7 +22,14 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserModel createUser(UserDto userModel) {
-        return userRepository.save(new UserModel(userModel));
+        UserModel user = new UserModel(userModel);
+
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setUserType(UserType.STUDENT);
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        return userRepository.save(user);
     }
 
     public List<UserModel> getAllUsers() {
@@ -31,4 +41,25 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
+
+    @Override
+    public UserModel updateUser(String id, UserDto userModel) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    user.setFullname(userModel.getFullname());
+                    user.setEmail(userModel.getEmail());
+                    user.setCpf(userModel.getCpf());
+                    user.setPhoneNumber(userModel.getPhoneNumber());
+                    user.setImageUrl(userModel.getImageUrl());
+                    user.setUpdatedAt(LocalDateTime.now());
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+    }
+
+    @Override
+    public void deleteUser(String id) {
+        userRepository.deleteById(id);
+    }
+
 }

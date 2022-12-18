@@ -13,4 +13,9 @@ public interface UserService {
     List<UserModel> getAllUsers();
 
     UserModel findById(String id);
+
+    UserModel updateUser(String id, UserDto userModel);
+
+    void deleteUser(String id);
+
 }
