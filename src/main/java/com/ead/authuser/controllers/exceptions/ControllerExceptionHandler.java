@@ -1,6 +1,7 @@
 package com.ead.authuser.controllers.exceptions;
 
 import com.ead.authuser.exceptions.DatabaseIntegrityException;
+import com.ead.authuser.exceptions.FieldException;
 import com.ead.authuser.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,11 @@ public class ControllerExceptionHandler {
         return getStandardErrorResponseEntity(e, request, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(FieldException.class)
+    public ResponseEntity<StandardError> resourceNotFound(FieldException e, HttpServletRequest request) {
+        return getStandardErrorResponseEntity(e, request, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(DatabaseIntegrityException.class)
     public ResponseEntity<StandardError> database(DatabaseIntegrityException e, HttpServletRequest request) {
         return getStandardErrorResponseEntity(e, request, HttpStatus.BAD_REQUEST);
@@ -29,12 +35,14 @@ public class ControllerExceptionHandler {
         return getValidationErrorResponseEntity(e, request);
     }
 
+
+
     private ResponseEntity<StandardError> getStandardErrorResponseEntity(RuntimeException e, HttpServletRequest request, HttpStatus status) {
         StandardError err = new StandardError();
         err.setTimestamp(Instant.now());
         err.setStatus(status.value());
         err.setMessage(e.getMessage());
-        err.setError("Resource not found");
+        err.setError("Validation error");
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }

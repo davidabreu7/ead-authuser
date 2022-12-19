@@ -3,6 +3,7 @@ package com.ead.authuser.services.impl;
 import com.ead.authuser.dto.UserDto;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
+import com.ead.authuser.exceptions.FieldException;
 import com.ead.authuser.exceptions.ResourceNotFoundException;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.repositories.UserRepository;
@@ -16,6 +17,8 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+
+    private static final String  USER_NOT_FOUND = "User not found";
 
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -39,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserModel findById(String id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
     }
 
     @Override
@@ -47,19 +50,44 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .map(user -> {
                     user.setFullname(userModel.getFullname());
-                    user.setEmail(userModel.getEmail());
                     user.setCpf(userModel.getCpf());
                     user.setPhoneNumber(userModel.getPhoneNumber());
-                    user.setImageUrl(userModel.getImageUrl());
                     user.setUpdatedAt(LocalDateTime.now());
                     return userRepository.save(user);
                 })
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
     }
 
     @Override
     public void deleteUser(String id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public String updatePassword(String id, UserDto userModel) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    if (user.getPassword().equals(userModel.getOldPassword())) {
+                        user.setPassword(userModel.getPassword());
+                        user.setUpdatedAt(LocalDateTime.now());
+                        userRepository.save(user);
+                        return "Password updated successfully";
+                    } else {
+                        throw new FieldException("Error: Mismatched old password ");
+                    }
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
+    }
+
+    @Override
+    public UserModel updateImage(String id, UserDto userModel) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    user.setImageUrl(userModel.getImageUrl());
+                    user.setUpdatedAt(LocalDateTime.now());
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
     }
 
 }

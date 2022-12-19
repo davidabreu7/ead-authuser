@@ -18,4 +18,7 @@ public interface UserService {
 
     void deleteUser(String id);
 
+    String updatePassword(String id, UserDto userModel);
+
+    UserModel updateImage(String id, UserDto userModel);
 }

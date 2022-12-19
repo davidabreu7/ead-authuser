@@ -15,6 +15,7 @@ public class UserValidator implements ConstraintValidator<UsertValid, UserDto> {
     @Autowired
     private UserRepository userRepository;
 
+
     @Override
     public void initialize(UsertValid constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
@@ -25,15 +26,12 @@ public class UserValidator implements ConstraintValidator<UsertValid, UserDto> {
 
         List<FieldError> list = new ArrayList<>();
 
-        if (Boolean.TRUE.equals(userRepository.existsByUsername(dto.getUsername()))){
-            list.add(new FieldError("Username", "Usuário ja existente"));
-        }
-        if (Boolean.TRUE.equals(userRepository.existsByEmail(dto.getEmail()))){
-            list.add(new FieldError("email", "Email ja existe"));
-        }
-        if (Boolean.TRUE.equals(userRepository.existsByCpf(dto.getCpf()))){
-            list.add(new FieldError("cpf", "CPF ja existe"));
-        }
+            if (Boolean.TRUE.equals(userRepository.existsByUsername(dto.getUsername()))) {
+                list.add(new FieldError("Username", "Usuário ja existente"));
+            }
+            if (Boolean.TRUE.equals(userRepository.existsByEmail(dto.getEmail()))) {
+                list.add(new FieldError("email", "Email ja existe"));
+            }
 
         for (FieldError e : list) {
             context.disableDefaultConstraintViolation();
