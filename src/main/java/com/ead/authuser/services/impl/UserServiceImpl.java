@@ -1,5 +1,6 @@
 package com.ead.authuser.services.impl;
 
+import com.ead.authuser.controllers.UserController;
 import com.ead.authuser.dto.UserDto;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
@@ -8,10 +9,14 @@ import com.ead.authuser.exceptions.ResourceNotFoundException;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.repositories.UserRepository;
 import com.ead.authuser.services.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,14 +40,29 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    public List<UserModel> getAllUsers() {
-        return userRepository.findAll();
+    @Override
+    public Page<UserModel> getAllUsers(Pageable pageable) {
+
+        Page<UserModel> page = userRepository.findAll(pageable);
+
+        if (!page.isEmpty()) {
+            page.toList().forEach(user -> {
+                user.add(linkTo(methodOn(UserController.class).findById(user.getId())).withSelfRel());
+                user.add(linkTo(methodOn(UserController.class).getAllUsers(pageable)).withRel("users"));
+            });
+        }
+        return page;
     }
 
     @Override
     public UserModel findById(String id) {
-        return userRepository.findById(id)
+        UserModel userModel = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
+
+        userModel.add(linkTo(methodOn(UserController.class).findById(id)).withSelfRel());
+        userModel.add(linkTo(methodOn(UserController.class).getAllUsers(null)).withRel("users"));
+
+        return userModel;
     }
 
     @Override

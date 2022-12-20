@@ -35,7 +35,8 @@ public class UserValidator implements ConstraintValidator<UsertValid, UserDto> {
 
         for (FieldError e : list) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(e.getError()).addPropertyNode(e.getField())
+            context.buildConstraintViolationWithTemplate(e.getError())
+                    .addPropertyNode(e.getField())
                     .addConstraintViolation();
         }
         return list.isEmpty();

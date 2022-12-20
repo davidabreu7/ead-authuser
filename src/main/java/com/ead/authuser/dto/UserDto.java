@@ -1,5 +1,6 @@
 package com.ead.authuser.dto;
 
+import com.ead.authuser.services.validation.CpfValid;
 import com.ead.authuser.services.validation.UsertValid;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.constraints.Email;
@@ -33,18 +34,19 @@ public class UserDto {
     @Size(min = 6, max = 12)
     @JsonView({UserView.RegistrationPost.class, UserView.PasswordPut.class})
     private String password;
-    @NotBlank(groups = UserView.RegistrationPost.class)
-    @Size(min = 6, max = 12)
+    @NotBlank(groups = UserView.PasswordPut.class)
+    @Size(min = 6, max = 12, groups = UserView.PasswordPut.class)
     @JsonView({UserView.PasswordPut.class})
     private String oldPassword;
-    @Size(min = 4, max = 150)
+    @Size(min = 4, max = 150, groups = {UserView.RegistrationPost.class, UserView.UserPut.class})
     @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
     private String fullname;
     @Size(max = 20, groups = {UserView.RegistrationPost.class, UserView.UserPut.class})
     @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
     private String phoneNumber;
     @Size(max = 11, groups = {UserView.RegistrationPost.class, UserView.UserPut.class})
-    @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
+    @JsonView({UserView.RegistrationPost.class})
+    @CpfValid(groups = {UserView.RegistrationPost.class, UserView.UserPut.class})
     private String cpf;
     @NotBlank(groups = UserView.ImagePut.class)
     @JsonView({UserView.ImagePut.class})

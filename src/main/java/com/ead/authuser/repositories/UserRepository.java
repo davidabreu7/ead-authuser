@@ -1,6 +1,8 @@
 package com.ead.authuser.repositories;
 
 import com.ead.authuser.models.UserModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,10 +12,10 @@ import java.util.Optional;
 public interface UserRepository  extends MongoRepository<UserModel, String> {
 
     Optional<UserModel> findById(String id);
-
-
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
+    boolean existsByCpf(String cpf);
 
+    Page<UserModel> findAll(Pageable pageable);
 }
 
