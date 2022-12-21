@@ -4,8 +4,6 @@ server:
 
 #mongodb
 spring:
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:prod}
   data:
     mongodb:
       host: ${DB_HOST}
