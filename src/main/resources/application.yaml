@@ -5,12 +5,4 @@ server:
 #mongodb
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:prod}
-  data:
-    mongodb:
-      host: ${DB_HOST}
-      port: ${DB_PORT}
-      authentication-database: admin
-      username: ${DB_USER}
-      password: ${DB_PASS}
-      database: users
+    active: ${SPRING_PROFILES_ACTIVE:dev}
