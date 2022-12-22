@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,8 @@ public class UserModel extends RepresentationModel<UserModel> {
     @Id
     private String id;
     @Indexed(unique = true)
+    @NotBlank(groups = UserDto.UserView.RegistrationPost.class)
+    @Pattern(regexp = "^[a-zA-Z0-9_]*$", message = "Username must be alphanumeric")
     private String username;
     @Indexed(unique = true)
     @Email
