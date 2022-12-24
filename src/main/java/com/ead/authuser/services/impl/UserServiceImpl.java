@@ -11,6 +11,7 @@ import com.ead.authuser.repositories.UserRepository;
 import com.ead.authuser.services.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -41,28 +42,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserModel> getAllUsers(Pageable pageable) {
+    public Page<EntityModel<UserModel>> getAllUsers(Pageable pageable) {
 
         Page<UserModel> page = userRepository.findAll(pageable);
-
+        Page<EntityModel<UserModel>> pageEntity = Page.empty();
         if (!page.isEmpty()) {
-            page.toList().forEach(user -> {
-                user.add(linkTo(methodOn(UserController.class).findById(user.getId())).withSelfRel());
-                user.add(linkTo(methodOn(UserController.class).getAllUsers(pageable)).withRel("users"));
-            });
+            pageEntity =  page.map(user -> EntityModel.of(user,
+                    linkTo(methodOn(UserController.class).findById(user.getId())).withSelfRel(),
+                    linkTo(methodOn(UserController.class).getAllUsers(pageable)).withRel("users")));
         }
-        return page;
+        return pageEntity;
     }
 
     @Override
-    public UserModel findById(String id) {
+    public EntityModel<UserModel> findById(String id) {
         UserModel userModel = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
 
-        userModel.add(linkTo(methodOn(UserController.class).findById(id)).withSelfRel());
-        userModel.add(linkTo(methodOn(UserController.class).getAllUsers(null)).withRel("users"));
-
-        return userModel;
+        return EntityModel.of(userModel, linkTo(methodOn(UserController.class).findById(id)).withSelfRel(),
+                linkTo(methodOn(UserController.class).getAllUsers(null)).withRel("users"));
     }
 
     @Override

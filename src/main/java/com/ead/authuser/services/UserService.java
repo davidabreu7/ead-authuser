@@ -5,15 +5,16 @@ import com.ead.authuser.models.UserModel;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.EntityModel;
 
 
 public interface UserService {
 
     UserModel createUser(@Valid UserDto userModel);
 
-    Page<UserModel> getAllUsers(Pageable pageable);
+    Page<EntityModel<UserModel>> getAllUsers(Pageable pageable);
 
-    UserModel findById(String id);
+    EntityModel<UserModel> findById(String id);
 
     UserModel updateUser(String id, UserDto userModel);
 

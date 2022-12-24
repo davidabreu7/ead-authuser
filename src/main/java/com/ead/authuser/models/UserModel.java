@@ -8,24 +8,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 
 
-@EqualsAndHashCode(callSuper = true)
 @Document(collection = "users")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 @NoArgsConstructor
-public class UserModel extends RepresentationModel<UserModel> {
+public class UserModel  {
 
     @Id
     private String id;
@@ -48,9 +46,9 @@ public class UserModel extends RepresentationModel<UserModel> {
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime updatedAt;
-    @NotBlank
+    @NotNull
     private UserStatus userStatus;
-    @NotBlank
+    @NotNull
     private UserType userType;
 
     public UserModel(UserDto userDto) {

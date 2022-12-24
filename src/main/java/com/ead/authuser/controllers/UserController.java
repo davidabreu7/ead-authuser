@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,12 +27,12 @@ private final UserService userService;
     }
 
     @GetMapping
-    public ResponseEntity<Page<UserModel>> getAllUsers(@PageableDefault() Pageable pageable) {
+    public ResponseEntity<Page<EntityModel<UserModel>>> getAllUsers(@PageableDefault() Pageable pageable) {
         return ResponseEntity.ok().body(userService.getAllUsers(pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserModel> findById(@PathVariable String id){
+    public ResponseEntity<EntityModel<UserModel>> findById(@PathVariable String id){
         return ResponseEntity.ok(userService.findById(id));
     }
 
