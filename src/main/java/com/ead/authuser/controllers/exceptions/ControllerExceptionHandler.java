@@ -3,11 +3,10 @@ package com.ead.authuser.controllers.exceptions;
 import com.ead.authuser.exceptions.DatabaseIntegrityException;
 import com.ead.authuser.exceptions.FieldException;
 import com.ead.authuser.exceptions.ResourceNotFoundException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoWriteException;
+
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,8 +17,6 @@ import java.time.Instant;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
-
-
 
     private static final  String ERROR = "Validation error";
 
@@ -43,11 +40,15 @@ public class ControllerExceptionHandler {
         return getValidationErrorResponseEntity(e, request);
     }
 
-    @ExceptionHandler(MongoWriteException.class)
-    public ResponseEntity<MongoError> database(MongoWriteException e, HttpServletRequest request) {
-        return getMongoWriteException(e, request);
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ValidationError> database(ConstraintViolationException e, HttpServletRequest request) {
+        return getMongoValidationErrorResponseEntity(e, request);
     }
 
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<StandardError> database(DuplicateKeyException e, HttpServletRequest request) {
+        return getMongoKeyValidationErrorResponseEntity(e, request);
+    }
 
 
     private ResponseEntity<StandardError> getStandardErrorResponseEntity(RuntimeException e, HttpServletRequest request, HttpStatus status) {
@@ -77,29 +78,37 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-    private ResponseEntity<MongoError> getMongoWriteException(MongoWriteException e, HttpServletRequest request)  {
+    private ResponseEntity<ValidationError> getMongoValidationErrorResponseEntity(ConstraintViolationException e, HttpServletRequest request) {
 
         ValidationError err = new ValidationError();
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
-        ObjectMapper mapper = new ObjectMapper();
-        MongoError mongoError = new MongoError();
+
         err.setTimestamp(Instant.now());
         err.setStatus(status.value());
         err.setMessage(e.getMessage());
         err.setError(ERROR);
         err.setPath(request.getRequestURI());
-        JsonNode node;
-        try {
-            node = mapper.readTree(e.getError().getDetails().get("details").toString());
-        } catch (JsonProcessingException ex) {
-            throw new FieldException(ex.getMessage());
-        }
 
-        mongoError.setMessage(e.getMessage());
-        mongoError.setJsonError(node);
+        e.getConstraintViolations()
+                .stream()
+                .map(error -> new FieldError(error.getPropertyPath().toString(), error.getMessage()))
+                .forEach(fieldError -> err.getFieldErrors().add(fieldError));
 
-        return ResponseEntity.status(status).body(mongoError);
+        return ResponseEntity.status(status).body(err);
+    }
 
+    private ResponseEntity<StandardError> getMongoKeyValidationErrorResponseEntity(DuplicateKeyException e, HttpServletRequest request) {
+
+        StandardError err = new StandardError();
+        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
+
+        err.setTimestamp(Instant.now());
+        err.setStatus(status.value());
+        err.setMessage(e.getCause().getMessage());
+        err.setError(ERROR);
+        err.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
     }
 }
 
