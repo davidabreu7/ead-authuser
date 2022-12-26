@@ -19,7 +19,7 @@ import java.time.Instant;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-    ValidationError err = new ValidationError();
+
 
     private static final  String ERROR = "Validation error";
 
@@ -62,7 +62,9 @@ public class ControllerExceptionHandler {
 
     private ResponseEntity<ValidationError> getValidationErrorResponseEntity(MethodArgumentNotValidException e, HttpServletRequest request) {
 
+        ValidationError err = new ValidationError();
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
+
         err.setTimestamp(Instant.now());
         err.setStatus(status.value());
         err.setMessage(e.getMessage());
@@ -77,6 +79,7 @@ public class ControllerExceptionHandler {
 
     private ResponseEntity<MongoError> getMongoWriteException(MongoWriteException e, HttpServletRequest request)  {
 
+        ValidationError err = new ValidationError();
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
         ObjectMapper mapper = new ObjectMapper();
         MongoError mongoError = new MongoError();
@@ -85,7 +88,7 @@ public class ControllerExceptionHandler {
         err.setMessage(e.getMessage());
         err.setError(ERROR);
         err.setPath(request.getRequestURI());
-        JsonNode node = null;
+        JsonNode node;
         try {
             node = mapper.readTree(e.getError().getDetails().get("details").toString());
         } catch (JsonProcessingException ex) {
