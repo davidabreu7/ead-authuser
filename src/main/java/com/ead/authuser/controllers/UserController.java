@@ -6,8 +6,10 @@ import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.UserService;
 import com.ead.authuser.services.impl.UserServiceImpl;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -27,8 +29,9 @@ private final UserService userService;
     }
 
     @GetMapping
-    public ResponseEntity<Page<EntityModel<UserModel>>> getAllUsers(@PageableDefault() Pageable pageable) {
-        return ResponseEntity.ok().body(userService.getAllUsers(pageable));
+    public ResponseEntity<Page<EntityModel<UserModel>>> getAllUsers(@QuerydslPredicate(root = UserModel.class) Predicate predicate,
+                                                                    @PageableDefault() Pageable pageable) {
+        return ResponseEntity.ok().body(userService.getAllUsers(predicate, pageable));
     }
 
     @GetMapping("/{id}")

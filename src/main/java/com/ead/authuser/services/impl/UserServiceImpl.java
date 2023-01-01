@@ -9,6 +9,7 @@ import com.ead.authuser.exceptions.ResourceNotFoundException;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.repositories.UserRepository;
 import com.ead.authuser.services.UserService;
+import com.querydsl.core.types.Predicate;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,14 +48,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<EntityModel<UserModel>> getAllUsers(Pageable pageable) {
-
-        Page<UserModel> page = userRepository.findAll(pageable);
+    public Page<EntityModel<UserModel>> getAllUsers(Predicate predicate, Pageable pageable) {
+        Page<UserModel> page = userRepository.findAll(predicate, pageable);
         Page<EntityModel<UserModel>> pageEntity = Page.empty();
         if (!page.isEmpty()) {
             pageEntity =  page.map(user -> EntityModel.of(user,
                     linkTo(methodOn(UserController.class).findById(user.getId())).withSelfRel(),
-                    linkTo(methodOn(UserController.class).getAllUsers(pageable)).withRel("users")));
+                    linkTo(methodOn(UserController.class).getAllUsers(predicate, pageable)).withRel("users")));
         }
         return pageEntity;
     }
@@ -64,8 +64,7 @@ public class UserServiceImpl implements UserService {
         UserModel userModel = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
 
-        return EntityModel.of(userModel, linkTo(methodOn(UserController.class).findById(id)).withSelfRel(),
-                linkTo(methodOn(UserController.class).getAllUsers(null)).withRel("users"));
+        return EntityModel.of(userModel, linkTo(methodOn(UserController.class).findById(id)).withSelfRel());
     }
 
     @Override
