@@ -1,5 +1,6 @@
 package com.ead.authuser.models;
 
+import com.ead.authuser.dto.CourseRecord;
 import com.ead.authuser.dto.UserDto;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
@@ -15,10 +16,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 
 @Document(collection = "users")
@@ -52,8 +53,9 @@ public class UserModel  {
     @NotNull
     private UserStatus userStatus;
     @NotNull
-    @DBRef
     private UserType userType;
+    private Set<CourseRecord> courses;
+
 
     public UserModel(UserDto userDto) {
         this.username = userDto.getUsername();

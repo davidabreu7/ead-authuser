@@ -12,3 +12,6 @@ spring:
     ansi:
       enabled: always
 
+client:
+  url: http://localhost:8090/api/v1
+
