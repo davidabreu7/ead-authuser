@@ -5,6 +5,7 @@ import com.ead.authuser.dto.CourseRecord;
 import com.ead.authuser.dto.ResponsePageDto;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class UserCourseService {
     private final UserCourseClient userCourseClient;
