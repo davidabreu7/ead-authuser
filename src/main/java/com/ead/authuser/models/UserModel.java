@@ -1,6 +1,5 @@
 package com.ead.authuser.models;
 
-import com.ead.authuser.dto.CourseRecord;
 import com.ead.authuser.dto.UserDto;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
@@ -54,7 +53,7 @@ public class UserModel  {
     private UserStatus userStatus;
     @NotNull
     private UserType userType;
-    private Set<CourseRecord> courses;
+    private Set<String> courses;
 
 
     public UserModel(UserDto userDto) {

@@ -2,8 +2,7 @@ package com.ead.authuser.repositories;
 
 import com.ead.authuser.models.QUserModel;
 import com.ead.authuser.models.UserModel;
-import com.querydsl.core.types.dsl.StringExpression;
-import com.querydsl.core.types.dsl.StringPath;
+import com.querydsl.core.BooleanBuilder;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
@@ -23,12 +22,11 @@ public interface UserRepository  extends MongoRepository<UserModel, String>, Que
 
     @Override
     default void customize(QuerydslBindings bindings, QUserModel root) {
-        bindings.bind(root.username).first(StringExpression::contains);
-        bindings.bind(root.email).first(StringExpression::contains);
-        bindings.bind(root.fullname).first(StringExpression::contains);
-        bindings.bind(String.class)
-                .first((StringPath path, String value) -> path.containsIgnoreCase(value));
-        bindings.excluding(root.password);
+        bindings.bind(root.username, root.email, root.fullname).all((path, value) -> {
+            BooleanBuilder builder = new BooleanBuilder();
+            value.forEach(v -> builder.or(path.containsIgnoreCase(v)));
+            return Optional.of(builder);
+        });
     }
 
 }

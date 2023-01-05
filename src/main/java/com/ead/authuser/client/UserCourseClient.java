@@ -11,7 +11,7 @@ import org.springframework.web.service.annotation.HttpExchange;
 public interface UserCourseClient {
 
     @GetExchange("/courses")
-    ResponsePageDto<CourseRecord> getAllCoursesByStudent(@RequestParam(name = "studentId") String id);
+    ResponsePageDto<CourseRecord> getAllCoursesByStudent(@RequestParam(name = "users") String id);
 
     @GetExchange("/{id}")
     CourseRecord getCourseById(@PathVariable(name = "id") String courseId);
