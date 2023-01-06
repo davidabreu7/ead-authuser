@@ -50,6 +50,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<EntityModel<UserModel>> getAllUsers(Predicate predicate, Pageable pageable) {
         Page<UserModel> page = userRepository.findAll(predicate, pageable);
+        if(page.isEmpty()) {
+            throw new ResourceNotFoundException(USER_NOT_FOUND);
+        }
         Page<EntityModel<UserModel>> pageEntity = Page.empty();
         if (!page.isEmpty()) {
             pageEntity =  page.map(user -> EntityModel.of(user,

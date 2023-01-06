@@ -12,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
@@ -48,6 +50,10 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<StandardError> database(DuplicateKeyException e, HttpServletRequest request) {
         return getMongoKeyValidationErrorResponseEntity(e, request);
+    }
+    @ExceptionHandler(WebClientResponseException.class)
+    public ResponseEntity<StandardError> weebClientResponseException(WebClientResponseException e, HttpServletRequest request) {
+        return getStandardErrorResponseEntity(e, request, Objects.requireNonNull(HttpStatus.resolve(e.getStatusCode().value())));
     }
 
 
