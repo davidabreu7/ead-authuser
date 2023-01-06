@@ -1,5 +1,6 @@
 package com.ead.authuser.services;
 
+import com.ead.authuser.dto.InstructorDto;
 import com.ead.authuser.dto.UserDto;
 import com.ead.authuser.models.UserModel;
 import com.querydsl.core.types.Predicate;
@@ -24,4 +25,7 @@ public interface UserService {
     String updatePassword(String id, UserDto userModel);
 
     UserModel updateImage(String id, UserDto userModel);
+
+    UserModel registerInstructor(InstructorDto instructorDto);
+
 }

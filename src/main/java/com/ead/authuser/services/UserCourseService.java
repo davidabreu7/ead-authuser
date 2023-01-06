@@ -8,6 +8,7 @@ import com.ead.authuser.exceptions.ResourceNotFoundException;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.repositories.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -29,6 +30,7 @@ public class UserCourseService {
         return userCourseClient.getAllCoursesByStudent(id);
     }
 
+    @Transactional
     public UserRecord subscribeUserInCourse(String userId, String courseId) {
         UserModel userModel = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));

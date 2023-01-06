@@ -1,6 +1,7 @@
 package com.ead.authuser.services.impl;
 
 import com.ead.authuser.controllers.UserController;
+import com.ead.authuser.dto.InstructorDto;
 import com.ead.authuser.dto.UserDto;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
@@ -17,6 +18,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -119,6 +121,16 @@ public class UserServiceImpl implements UserService {
                     return userRepository.save(user);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
+    }
+
+    @Override
+    public UserModel registerInstructor(InstructorDto instructorDto) {
+        UserModel user = userRepository.findById(instructorDto.getId().toString())
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + instructorDto.getId()));
+
+        user.setUserType(UserType.INSTRUCTOR);
+        user.setUpdatedAt(LocalDateTime.now(ZoneId.of("UTC")));
+        return userRepository.save(user);
     }
 
 }
