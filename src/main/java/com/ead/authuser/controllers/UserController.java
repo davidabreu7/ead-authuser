@@ -7,6 +7,8 @@ import com.ead.authuser.services.UserService;
 import com.ead.authuser.services.impl.UserServiceImpl;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.querydsl.core.types.Predicate;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
@@ -17,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -24,8 +28,11 @@ public class UserController {
 
 private final UserService userService;
 
-    public UserController(UserServiceImpl userService) {
+    private final DiscoveryClient discoveryClient;
+
+    public UserController(UserServiceImpl userService, DiscoveryClient discoveryClient) {
         this.userService = userService;
+        this.discoveryClient = discoveryClient;
     }
 
     @GetMapping
@@ -72,4 +79,9 @@ private final UserService userService;
         return ResponseEntity.ok(userService.updateImage(id, userModel));
     }
 
+    @RequestMapping("/service-instances/{applicationName}")
+    public List<ServiceInstance> serviceInstancesByApplicationName(
+            @PathVariable String applicationName) {
+        return this.discoveryClient.getInstances(applicationName);
+    }
 }

@@ -2,11 +2,11 @@ package com.ead.authuser.services;
 
 import com.ead.authuser.client.UserCourseClient;
 import com.ead.authuser.dto.CourseRecord;
-import com.ead.authuser.dto.ResponsePageDto;
 import com.ead.authuser.dto.UserRecord;
 import com.ead.authuser.exceptions.ResourceNotFoundException;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.repositories.UserRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserCourseService {
     private final UserCourseClient userCourseClient;
     private final UserRepository userRepository;
+
 
     public UserCourseService(UserCourseClient userCourseClient, UserRepository userRepository) {
         this.userCourseClient = userCourseClient;
@@ -25,10 +26,11 @@ public class UserCourseService {
         return userCourseClient.getCourseById(id);
     }
 
-    public ResponsePageDto<CourseRecord> getAllCoursesByStudent(String id) {
+    public Page<CourseRecord> getAllCoursesByStudent(String id) {
 
         return userCourseClient.getAllCoursesByStudent(id);
     }
+
 
     @Transactional
     public UserRecord subscribeUserInCourse(String userId, String courseId) {

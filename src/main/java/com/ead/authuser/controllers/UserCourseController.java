@@ -1,10 +1,10 @@
 package com.ead.authuser.controllers;
 
 import com.ead.authuser.dto.CourseRecord;
-import com.ead.authuser.dto.ResponsePageDto;
 import com.ead.authuser.dto.UserRecord;
 import com.ead.authuser.services.UserCourseService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +20,7 @@ public class UserCourseController {
     }
 
     @GetMapping("/users/{id}/courses")
-    public ResponseEntity<ResponsePageDto<CourseRecord>> getCoursesByUser(@PathVariable String id) {
+    public ResponseEntity<Page<CourseRecord>> getCoursesByUser(@PathVariable String id) {
         return ResponseEntity.ok(userCourseService.getAllCoursesByStudent(id));
     }
 
