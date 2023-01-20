@@ -83,14 +83,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(String id) {
-        if(userRepository.existsById(id)) {
+        UserModel user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
+        if(!user.getCourses().isEmpty()) {
             userCourseService.deleteUserFromCourse(id);
-            userRepository.deleteById(id);
-            log.info("User deleted successfully userId {}", id);
-        } else {
-            throw new ResourceNotFoundException(USER_NOT_FOUND + id);
         }
+        userRepository.deleteById(id);
+        log.info("User deleted successfully userId {}", id);
     }
+
 
     @Override
     public String updatePassword(String id, UserDto userModel) {

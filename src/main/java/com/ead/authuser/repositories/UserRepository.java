@@ -9,6 +9,7 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,7 +33,13 @@ public interface UserRepository  extends MongoRepository<UserModel, String>, Que
             value.forEach(course -> builder.or(root.courses.contains(course)));
             return builder;
         });
+    }
 
+    default List<UserModel> findUserByCourse(String courseId) {
+        QUserModel user = QUserModel.userModel;
+        BooleanBuilder predicate = new BooleanBuilder();
+        predicate.and(user.username.eq(courseId));
+        return (List<UserModel>) findAll(predicate);
     }
 
 }

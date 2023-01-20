@@ -30,4 +30,8 @@ public class UserCourseController {
         return ResponseEntity.ok(userCourseService.subscribeUserInCourse(userId, courseId));
     }
 
+    @DeleteMapping("/users/courses/{courseId}")
+    public void deleteCourseFromUser(@PathVariable String courseId) {
+        userCourseService.deleteCourseFromUser(courseId);
+    }
 }

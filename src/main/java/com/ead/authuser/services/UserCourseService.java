@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 public class UserCourseService {
@@ -47,6 +49,17 @@ public class UserCourseService {
 
     public void deleteUserFromCourse(String userId) {
         userCourseClient.deleteUserFromCourse(userId);
+    }
+
+    public void deleteCourseFromUser(String courseId) {
+        List<UserModel> users = userRepository.findUserByCourse(courseId);
+        if(users.isEmpty()) {
+            throw new ResourceNotFoundException("Course not found");
+        }
+        users.forEach(user -> {
+            user.getCourses().remove(courseId);
+            userRepository.save(user);
+        });
     }
 }
 
