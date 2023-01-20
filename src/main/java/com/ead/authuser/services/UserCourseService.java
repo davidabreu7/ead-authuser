@@ -44,5 +44,9 @@ public class UserCourseService {
 
         return new UserRecord(userRepository.save(userModel));
     }
+
+    public void deleteUserFromCourse(String userId) {
+        userCourseClient.deleteUserFromCourse(userId);
+    }
 }
 

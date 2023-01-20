@@ -7,13 +7,13 @@ import com.ead.authuser.services.UserService;
 import com.ead.authuser.services.impl.UserServiceImpl;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.querydsl.core.types.Predicate;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,11 +22,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("${api.controller.path}"+"/users")
 @CrossOrigin(origins = "*", maxAge = 3600)
+@Log4j2
 public class UserController {
 
-private final UserService userService;
+    private final UserService userService;
 
     private final DiscoveryClient discoveryClient;
 
@@ -36,13 +37,13 @@ private final UserService userService;
     }
 
     @GetMapping
-    public ResponseEntity<Page<EntityModel<UserModel>>> getAllUsers(@QuerydslPredicate(root = UserModel.class) Predicate predicate,
+    public ResponseEntity<Page<UserModel>> getAllUsers(@QuerydslPredicate(root = UserModel.class) Predicate predicate,
                                                                     @PageableDefault() Pageable pageable) {
         return ResponseEntity.ok().body(userService.getAllUsers(predicate, pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<UserModel>> findById(@PathVariable String id){
+    public ResponseEntity<UserModel> findById(@PathVariable String id){
         return ResponseEntity.ok(userService.findById(id));
     }
 
@@ -84,4 +85,7 @@ private final UserService userService;
             @PathVariable String applicationName) {
         return this.discoveryClient.getInstances(applicationName);
     }
+
 }
+
+

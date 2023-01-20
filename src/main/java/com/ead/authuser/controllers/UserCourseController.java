@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Log4j2
+@RequestMapping("${api.controller.path}")
 public class UserCourseController {
 
     private final UserCourseService userCourseService;
@@ -28,4 +29,5 @@ public class UserCourseController {
     public ResponseEntity<UserRecord> subscribeUserInCourse(@PathVariable String userId, @RequestParam String courseId) {
         return ResponseEntity.ok(userCourseService.subscribeUserInCourse(userId, courseId));
     }
+
 }

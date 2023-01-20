@@ -10,17 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-
-@Log4j2
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("${api.controller.path}")
 @CrossOrigin(origins = "*", maxAge = 3600)
-public class AuthenticationController {
-
+@Log4j2
+public class AuthController {
 
     private final UserService userService;
 
-    public AuthenticationController(UserService userService) {
+    public AuthController(UserService userService) {
         this.userService = userService;
     }
 
@@ -33,5 +31,4 @@ public class AuthenticationController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userModel));
     }
-
 }

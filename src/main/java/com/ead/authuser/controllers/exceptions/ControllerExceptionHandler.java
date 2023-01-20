@@ -3,7 +3,6 @@ package com.ead.authuser.controllers.exceptions;
 import com.ead.authuser.exceptions.DatabaseIntegrityException;
 import com.ead.authuser.exceptions.FieldException;
 import com.ead.authuser.exceptions.ResourceNotFoundException;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DuplicateKeyException;
@@ -12,10 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.Instant;
-import java.util.Objects;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
@@ -51,11 +48,6 @@ public class ControllerExceptionHandler {
     public ResponseEntity<StandardError> database(DuplicateKeyException e, HttpServletRequest request) {
         return getMongoKeyValidationErrorResponseEntity(e, request);
     }
-    @ExceptionHandler(WebClientResponseException.class)
-    public ResponseEntity<StandardError> weebClientResponseException(WebClientResponseException e, HttpServletRequest request) {
-        return getStandardErrorResponseEntity(e, request, Objects.requireNonNull(HttpStatus.resolve(e.getStatusCode().value())));
-    }
-
 
     private ResponseEntity<StandardError> getStandardErrorResponseEntity(RuntimeException e, HttpServletRequest request, HttpStatus status) {
         StandardError error = new StandardError();

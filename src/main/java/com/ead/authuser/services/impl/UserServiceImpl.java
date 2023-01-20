@@ -1,6 +1,5 @@
 package com.ead.authuser.services.impl;
 
-import com.ead.authuser.controllers.UserController;
 import com.ead.authuser.dto.InstructorDto;
 import com.ead.authuser.dto.UserDto;
 import com.ead.authuser.enums.UserStatus;
@@ -9,19 +8,17 @@ import com.ead.authuser.exceptions.FieldException;
 import com.ead.authuser.exceptions.ResourceNotFoundException;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.repositories.UserRepository;
+import com.ead.authuser.services.UserCourseService;
 import com.ead.authuser.services.UserService;
 import com.querydsl.core.types.Predicate;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 @Log4j2
@@ -29,10 +26,14 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    final
+    UserCourseService userCourseService;
+
     private static final String  USER_NOT_FOUND = "User not found";
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserCourseService userCourseService) {
         this.userRepository = userRepository;
+        this.userCourseService = userCourseService;
     }
 
     public UserModel createUser(UserDto userModel) {
@@ -50,26 +51,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<EntityModel<UserModel>> getAllUsers(Predicate predicate, Pageable pageable) {
-        Page<UserModel> page = userRepository.findAll(predicate, pageable);
-        if(page.isEmpty()) {
-            throw new ResourceNotFoundException(USER_NOT_FOUND);
-        }
-        Page<EntityModel<UserModel>> pageEntity = Page.empty();
-        if (!page.isEmpty()) {
-            pageEntity =  page.map(user -> EntityModel.of(user,
-                    linkTo(methodOn(UserController.class).findById(user.getId())).withSelfRel(),
-                    linkTo(methodOn(UserController.class).getAllUsers(predicate, pageable)).withRel("users")));
-        }
-        return pageEntity;
+    public Page<UserModel> getAllUsers(Predicate predicate, Pageable pageable) {
+
+        return userRepository.findAll(predicate, pageable);
     }
 
     @Override
-    public EntityModel<UserModel> findById(String id) {
-        UserModel userModel = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
+    public UserModel findById(String id) {
 
-        return EntityModel.of(userModel, linkTo(methodOn(UserController.class).findById(id)).withSelfRel());
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
     }
 
     @Override
@@ -90,10 +81,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(String id) {
-        userRepository.deleteById(id);
-        log.debug("DELETE deleteUser userId deleted: {}", id);
-        log.info("User deleted successfully userId {}", id);
+        if(userRepository.existsById(id)) {
+            userCourseService.deleteUserFromCourse(id);
+            userRepository.deleteById(id);
+            log.info("User deleted successfully userId {}", id);
+        } else {
+            throw new ResourceNotFoundException(USER_NOT_FOUND + id);
+        }
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/instructors")
+@RequestMapping("${api.controller.path}"+"/instructors")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Log4j2
 public class InstructorController {
