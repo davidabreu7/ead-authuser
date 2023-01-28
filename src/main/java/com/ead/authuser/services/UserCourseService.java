@@ -6,6 +6,7 @@ import com.ead.authuser.dto.UserRecord;
 import com.ead.authuser.exceptions.ResourceNotFoundException;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.repositories.UserRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.util.List;
 
 
 @Service
+@Log4j2
 public class UserCourseService {
     private final UserCourseClient userCourseClient;
     private final UserRepository userRepository;
@@ -53,6 +55,7 @@ public class UserCourseService {
 
     public void deleteCourseFromUser(String courseId) {
         List<UserModel> users = userRepository.findUserByCourse(courseId);
+        log.info("users: {}", users);
         if(users.isEmpty()) {
             throw new ResourceNotFoundException("Course not found");
         }

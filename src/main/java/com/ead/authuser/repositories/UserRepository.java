@@ -38,7 +38,7 @@ public interface UserRepository  extends MongoRepository<UserModel, String>, Que
     default List<UserModel> findUserByCourse(String courseId) {
         QUserModel user = QUserModel.userModel;
         BooleanBuilder predicate = new BooleanBuilder();
-        predicate.and(user.username.eq(courseId));
+        predicate.and(user.courses.contains(courseId));
         return (List<UserModel>) findAll(predicate);
     }
 
