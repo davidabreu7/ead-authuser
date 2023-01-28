@@ -2,13 +2,15 @@ package com.ead.authuser.services.impl;
 
 import com.ead.authuser.dto.InstructorDto;
 import com.ead.authuser.dto.UserDto;
+import com.ead.authuser.dto.UserEventDto;
+import com.ead.authuser.enums.ActionType;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
 import com.ead.authuser.exceptions.FieldException;
 import com.ead.authuser.exceptions.ResourceNotFoundException;
 import com.ead.authuser.models.UserModel;
+import com.ead.authuser.publishers.UserEventPublisher;
 import com.ead.authuser.repositories.UserRepository;
-import com.ead.authuser.services.UserCourseService;
 import com.ead.authuser.services.UserService;
 import com.querydsl.core.types.Predicate;
 import lombok.extern.log4j.Log4j2;
@@ -26,17 +28,21 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    final
-    UserCourseService userCourseService;
+
+    private final UserEventPublisher userEventPublisher;
+
 
     private static final String  USER_NOT_FOUND = "User not found";
 
-    public UserServiceImpl(UserRepository userRepository, UserCourseService userCourseService) {
+    public UserServiceImpl(UserRepository userRepository, UserEventPublisher userEventPublisher) {
         this.userRepository = userRepository;
-        this.userCourseService = userCourseService;
+        this.userEventPublisher = userEventPublisher;
     }
 
+    @Transactional
     public UserModel createUser(UserDto userModel) {
+
+        userValidation(userModel);
         UserModel user = new UserModel(userModel);
 
         user.setCreatedAt(LocalDateTime.now());
@@ -44,10 +50,25 @@ public class UserServiceImpl implements UserService {
         user.setUserType(UserType.STUDENT);
         user.setUserStatus(UserStatus.ACTIVE);
 
+        UserModel savedUser = userRepository.save(user);
+        userEventPublisher.publishUserEvent(new UserEventDto(savedUser), ActionType.CREATE);
+
         log.debug("POST createUser UserModel saved: {}", user.toString());
         log.info("User saved successfully userId {}", user.getId());
 
-        return userRepository.save(user);
+        return savedUser;
+    }
+
+    private void userValidation(UserDto userModel) {
+        if (userRepository.existsByCpf(userModel.getCpf())) {
+            log.error("POST createUser CPF already registered: {}", userModel.getCpf());
+            throw new FieldException("CPF already registered");
+        }
+
+        if (userRepository.existsByUsername(userModel.getUsername())) {
+            log.error("POST createUser username already registered: {}", userModel.getUsername());
+            throw new FieldException("username already registered");
+        }
     }
 
     @Override
@@ -83,12 +104,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(String id) {
-        UserModel user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
-        if(!user.getCourses().isEmpty()) {
-            userCourseService.deleteUserFromCourse(id);
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
         }
-        userRepository.deleteById(id);
         log.info("User deleted successfully userId {}", id);
     }
 

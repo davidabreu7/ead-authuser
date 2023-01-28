@@ -18,8 +18,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Document(collection = "users")
@@ -54,9 +52,6 @@ public class UserModel  {
     private UserStatus userStatus;
     @NotNull
     private UserType userType;
-    @JsonIgnore
-    private List<String> courses = new ArrayList<>();
-
 
     public UserModel(UserDto userDto) {
         this.username = userDto.getUsername();

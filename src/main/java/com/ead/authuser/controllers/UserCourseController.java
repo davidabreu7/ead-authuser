@@ -1,7 +1,6 @@
 package com.ead.authuser.controllers;
 
 import com.ead.authuser.dto.CourseRecord;
-import com.ead.authuser.dto.UserRecord;
 import com.ead.authuser.services.UserCourseService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -25,13 +24,4 @@ public class UserCourseController {
         return ResponseEntity.ok(userCourseService.getAllCoursesByStudent(id));
     }
 
-    @PostMapping("/users/{userId}/subscription")
-    public ResponseEntity<UserRecord> subscribeUserInCourse(@PathVariable String userId, @RequestParam String courseId) {
-        return ResponseEntity.ok(userCourseService.subscribeUserInCourse(userId, courseId));
-    }
-
-    @DeleteMapping("/users/courses/{courseId}")
-    public void deleteCourseFromUser(@PathVariable String courseId) {
-        userCourseService.deleteCourseFromUser(courseId);
-    }
 }
