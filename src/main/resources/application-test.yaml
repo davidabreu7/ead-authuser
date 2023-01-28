@@ -1,0 +1,22 @@
+
+#mongodb
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      authentication-database: admin
+      username: root
+      password: dvmongo123
+      database: users
+#      auto-index-creation: true
+
+
+logging:
+  level:
+    com.ead: DEBUG
+    o.s.w.c.RestTemplate: DEBUG
+    o.s.w.c.FeignClient: DEBUG
+#    o.s.w.c.WebClient: DEBUG
+    org.springframework.web.: DEBUG
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
