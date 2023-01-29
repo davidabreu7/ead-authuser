@@ -85,18 +85,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserModel updateUser(String id, UserDto userModel) {
+    public UserModel updateUser(String id, UserDto userDto) {
         return userRepository.findById(id)
                 .map(user -> {
-                    user.setFullname(userModel.getFullname());
-                    user.setCpf(userModel.getCpf());
-                    user.setPhoneNumber(userModel.getPhoneNumber());
+                    user.setFullname(userDto.getFullname());
+                    user.setCpf(userDto.getCpf());
+                    user.setPhoneNumber(userDto.getPhoneNumber());
+                    user.setEmail(userDto.getEmail());
+                    user.setImageUrl(userDto.getImageUrl());
                     user.setUpdatedAt(LocalDateTime.now());
 
+                    userRepository.save(user);
+                    userEventPublisher.publishUserEvent(new UserEventDto(user), ActionType.UPDATE);
                     log.debug("PUT updateUser UserModel updated: {}", user.toString());
                     log.info("User updated successfully userId {}", user.getId());
+                    return user;
 
-                    return userRepository.save(user);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
     }
@@ -104,10 +108,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(String id) {
-        if (userRepository.existsById(id)) {
-            userRepository.deleteById(id);
-        }
-        log.info("User deleted successfully userId {}", id);
+        var user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
+        userRepository.delete(user);
+        userEventPublisher.publishUserEvent(new UserEventDto(user), ActionType.DELETE);
+        log.info("User deleted successfully: {}", user);
     }
 
 
@@ -133,6 +138,9 @@ public class UserServiceImpl implements UserService {
                 .map(user -> {
                     user.setImageUrl(userModel.getImageUrl());
                     user.setUpdatedAt(LocalDateTime.now());
+                    userEventPublisher.publishUserEvent(new UserEventDto(user), ActionType.UPDATE);
+                    log.debug("PUT updateImage UserModel updated: {}", user.toString());
+                    log.info("User updated successfully userId {}", user.getId());
                     return userRepository.save(user);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
@@ -145,6 +153,9 @@ public class UserServiceImpl implements UserService {
 
         user.setUserType(UserType.INSTRUCTOR);
         user.setUpdatedAt(LocalDateTime.now(ZoneId.of("UTC")));
+        userEventPublisher.publishUserEvent(new UserEventDto(user), ActionType.UPDATE);
+        log.debug("PUT registerInstructor UserModel updated: {}", user.toString());
+        log.info("User updated successfully userId {}", user.getId());
         return userRepository.save(user);
     }
 

@@ -28,7 +28,7 @@ public class UserDto {
     @Indexed(unique = true)
     @Email(groups = UserView.RegistrationPost.class)
     @NotBlank(groups = UserView.RegistrationPost.class)
-    @JsonView({UserView.RegistrationPost.class})
+    @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
     private String email;
     @NotBlank(groups = {UserView.RegistrationPost.class, UserView.PasswordPut.class})
     @Size(min = 6, max = 12)
@@ -45,8 +45,8 @@ public class UserDto {
     @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
     private String phoneNumber;
     @Size(max = 11, groups = {UserView.RegistrationPost.class, UserView.UserPut.class})
-    @JsonView({UserView.RegistrationPost.class})
-    @CpfValid(groups = {UserView.RegistrationPost.class, UserView.UserPut.class})
+    @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
+    @CpfValid(groups = {UserView.RegistrationPost.class})
     private String cpf;
     @NotBlank(groups = UserView.ImagePut.class)
     @JsonView({UserView.ImagePut.class})

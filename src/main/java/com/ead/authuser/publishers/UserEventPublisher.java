@@ -22,4 +22,5 @@ public class UserEventPublisher {
         userEventDto.setActionType(actionType.toString());
         rabbitTemplate.convertAndSend(userEventExchange, "", userEventDto);
     }
+
 }
