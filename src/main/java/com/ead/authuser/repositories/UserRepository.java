@@ -9,7 +9,6 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,14 +27,6 @@ public interface UserRepository  extends MongoRepository<UserModel, String>, Que
             value.forEach(v -> builder.or(path.containsIgnoreCase(v)));
             return Optional.of(builder);
         });
-
-    }
-
-    default List<UserModel> findUserByCourse(String courseId) {
-        QUserModel user = QUserModel.userModel;
-        BooleanBuilder predicate = new BooleanBuilder();
-        predicate.and(user.courses.contains(courseId));
-        return (List<UserModel>) findAll(predicate);
     }
 
 }
