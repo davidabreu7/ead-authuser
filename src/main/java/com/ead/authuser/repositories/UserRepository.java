@@ -28,11 +28,7 @@ public interface UserRepository  extends MongoRepository<UserModel, String>, Que
             value.forEach(v -> builder.or(path.containsIgnoreCase(v)));
             return Optional.of(builder);
         });
-        bindings.bind(root.courses).first((path, value) -> {
-            BooleanBuilder builder = new BooleanBuilder();
-            value.forEach(course -> builder.or(root.courses.contains(course)));
-            return builder;
-        });
+
     }
 
     default List<UserModel> findUserByCourse(String courseId) {
