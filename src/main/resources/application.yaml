@@ -1,32 +1,60 @@
-#microservice
-server:
-  port: 8088
-
-api:
-  controller:
-    path: /authuser-service
-  broker:
-    exchange:
-      userEvent: ead.userevent
-
-spring:
-  application:
-    name: authuser-service
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
-  output:
-    ansi:
-      enabled: always
-  cloud:
-    openfeign:
-      autoconfiguration:
-        jackson:
-          enabled: true
-
-
+##microservice
+#server:
+#  port: 8088
+#
+#api:
+#  controller:
+#    path: /authuser-service
+#  broker:
+#    exchange:
+#      userEvent: ead.userevent
+#  timeout:
+#    default: 5000
+#
+#spring:
+#  application:
+#    name: authuser-service
+#  profiles:
+#    active: ${SPRING_PROFILES_ACTIVE:dev}
+#  output:
+#    ansi:
+#      enabled: always
+#  cloud:
+#    openfeign:
+#      autoconfiguration:
+#        jackson:
+#          enabled: true
+#      client:
+#        config:
+#          default:
+#            connectTimeout: ${api.timeout.default}
+#            readTimeout: ${api.timeout.default}
+#
+#resilience4j:
+#  circuitbreaker:
+#    instances:
+#      course-service:
+#        sliding-window-size: 30
+#        sliding-window-type: TIME_BASED
+#        permitted-number-of-calls-in-half-open-state: 5
+#        wait-duration-in-open-state: 10s
+#        failure-rate-threshold: 60
+#
 eureka:
   client:
     serviceUrl:
       defaultZone: http://host.docker.internal:8761/eureka/
-#  instance:
-#    hostname: localhost
+
+# configure config server
+spring:
+  application:
+    name: authuser-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE}
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
+  config:
+    import: 'configserver:'
